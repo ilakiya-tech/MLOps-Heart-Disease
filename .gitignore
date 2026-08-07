@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# MLflow
+mlruns/
+
+# DVC generated outputs
+models/
+metrics.json
+
+# OS
+.DS_Store
+Thumbs.db

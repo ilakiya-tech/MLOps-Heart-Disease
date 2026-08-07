@@ -1,0 +1,92 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/heart_disease.csv
+      hash: md5
+      md5: 8bfaaa3b504eab2313e85b5dd8160f8a
+      size: 18535
+    - path: src/prepare.py
+      hash: md5
+      md5: 61f61ad3634ffc64c8eef26061df274e
+      size: 1032
+    params:
+      params.yaml:
+        prepare.random_state: 42
+        prepare.test_size: 0.2
+    outs:
+    - path: data/test.csv
+      hash: md5
+      md5: d3d30422691cd14fce7193284d2d5147
+      size: 3860
+    - path: data/train.csv
+      hash: md5
+      md5: 4e248b3eead0daacf0a52473935decd4
+      size: 15078
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/test.csv
+      hash: md5
+      md5: d3d30422691cd14fce7193284d2d5147
+      size: 3860
+    - path: data/train.csv
+      hash: md5
+      md5: 4e248b3eead0daacf0a52473935decd4
+      size: 15078
+    - path: params.yaml
+      hash: md5
+      md5: ead86560cd41f21627c7de834dd27094
+      size: 333
+    - path: src/train.py
+      hash: md5
+      md5: d2481a6d566c77c0a2b41bd25943af3f
+      size: 3133
+    params:
+      params.yaml:
+        train:
+          logistic_regression:
+            C: 1.0
+            max_iter: 1000
+          random_forest:
+            n_estimators: 200
+            max_depth: 8
+            random_state: 42
+          xgboost:
+            learning_rate: 0.1
+            max_depth: 6
+            n_estimators: 200
+            random_state: 42
+    outs:
+    - path: models/best_model.joblib
+      hash: md5
+      md5: 96ae9906e79f06ab8d3820564e3e959f
+      size: 1385593
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/test.csv
+      hash: md5
+      md5: d3d30422691cd14fce7193284d2d5147
+      size: 3860
+    - path: models/best_model.joblib
+      hash: md5
+      md5: 96ae9906e79f06ab8d3820564e3e959f
+      size: 1385593
+    - path: params.yaml
+      hash: md5
+      md5: ead86560cd41f21627c7de834dd27094
+      size: 333
+    - path: src/evaluate.py
+      hash: md5
+      md5: 2f128b0ac53991de310e8079f148634b
+      size: 1733
+    params:
+      params.yaml:
+        evaluate.min_accuracy: 0.7
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 38404d6c7e0884fad4c7609b3c92d0b3
+      size: 150

@@ -1,0 +1,37 @@
+stages:
+
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - data/heart_disease.csv
+      - src/prepare.py
+    params:
+      - prepare.test_size
+      - prepare.random_state
+    outs:
+      - data/train.csv
+      - data/test.csv
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - data/train.csv
+      - data/test.csv
+      - src/train.py
+      - params.yaml
+    params:
+      - train
+    outs:
+      - models/best_model.joblib
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - models/best_model.joblib
+      - data/test.csv
+      - src/evaluate.py
+      - params.yaml
+    params:
+      - evaluate.min_accuracy
+    metrics:
+      - metrics.json
